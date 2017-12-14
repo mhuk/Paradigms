@@ -1,4 +1,5 @@
 import sys
+import fileinput
 from datetime import tzinfo, timedelta, datetime
 
 class TZ(tzinfo):
@@ -9,26 +10,48 @@ class TZ(tzinfo):
 class CategoryManager:
 
     def __init__(self):
-        self.categories = ["rent", "internet", "phone", "tv", "electricity", "water", "gas", "food", "alcohol"]
+        self.file_name = "CategoriesList.txt"
+
+    def check_file(self):
+        #check if file exists
+        try:
+            text = open(self.file_name, "r+")
+            print("Opened correctly.")
+            r_categories = text.read()
+            categories = r_categories.split( "\n" )
+            text.close()
+            return categories
+        except (IOError):
+            print("File not found.")
+            sys.exit()
+
+    def categories(self):
+        pass
 
     def add_category(self):
         while True:
             category_name = raw_input("Enter a new category")
-            if category_name in self.categories:
+            if category_name in self.check_file():
                 print("Category already exist")
                 continue
             else:
-                self.categories.append(category_name)
+                #append file if category is added
+                cat = open(self.file_name,'a')
+                cat.write("\n")
+                cat.write(category_name)
+                cat.close()
                 print("Category is added")
-                return self.categories
 
     def remove_category(self):
         while True:
             category_name = raw_input("Enter category to remove")
-            if category_name in self.categories:
-                self.categories.remove(category_name)
+            if category_name in self.check_file():
+                for line in fileinput.input(self.file_name,inplace = True):
+                    line = line.rstrip()
+                    if category_name in line:
+                        line.replace(category_name," ")
+                    #print(line)
                 print("Category is removed")
-                return self.categories
             else:
                 print("Category doesn't exist")
                 continue
@@ -37,13 +60,14 @@ class CategoryManager:
         text_menu = """ 
                 Press 1 if you want to add category
                 Press 2 if you want to remove category
-                Press 3 if you want to see categories"
-                Press 4 if you want to exit from edit"
+                Press 3 if you want to see categories
+                Press 4 if you want to exit from edit
                 """
         while True:
             choose = raw_input(text_menu)
             if choose.isdigit():
                 if int(choose) == 1:
+                    self.check_file()
                     self.add_category()
                 elif int(choose) == 2:
                     self.remove_category()
@@ -57,6 +81,8 @@ class CategoryManager:
             else:
                 print("Not correct value, try again")
                 continue
+
+
 
 class ExpenseManager:
 
@@ -76,7 +102,7 @@ class ExpenseManager:
                 return name, amount,date_expense
 
 category_object = CategoryManager()
-
+category_object.check_file()
 
 class Menu:
 
@@ -104,4 +130,7 @@ class Menu:
 
 menu_object = Menu()
 menu_object.menu_content()
+
+
+
 
