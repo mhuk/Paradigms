@@ -1,3 +1,5 @@
 water
 gas
 alcohol
+food
+rent
