@@ -1,19 +1,11 @@
 import sys
-import fileinput
-from datetime import tzinfo, timedelta, datetime
-
-class TZ(tzinfo):
-    #funtion to manage format of data
-    def utcoffset(self, dt):
-        return timedelta(minutes=-399)
-
 class CategoryManager:
 
     def __init__(self):
         self.file_name = "CategoriesList.txt"
 
     def check_file(self):
-        #check if file exists
+         #check if file exists
         try:
             text = open(self.file_name, "r+")
             print("Opened correctly.")
@@ -23,17 +15,16 @@ class CategoryManager:
             return categories
         except (IOError):
             print("File not found.")
-            sys.exit()
 
     def categories(self):
         pass
 
     def add_category(self):
         while True:
-            category_name = raw_input("Enter a new category")
+            category_name = raw_input( "Enter a new category" )
             if category_name in self.check_file():
                 print("Category already exist")
-                continue
+                break
             else:
                 #append file if category is added
                 cat = open(self.file_name,'a')
@@ -41,12 +32,13 @@ class CategoryManager:
                 cat.write(category_name)
                 cat.close()
                 print("Category is added")
-                break
 
     def remove_category(self):
         while True:
             category_name = raw_input("Enter category to remove")
-            if category_name in self.check_file():
+            if category_name not in self.check_file():
+                print("Category doesn't exist")
+            else:
                 f = open( self.file_name, "r+" )
                 d = f.readlines()
                 f.seek( 0 )
@@ -57,9 +49,6 @@ class CategoryManager:
                 f.close()
                 print("Category is removed")
                 break
-            else:
-                print("Category doesn't exist")
-                continue
 
     def menu(self):
         text_menu = """ 
@@ -76,41 +65,37 @@ class CategoryManager:
                     self.add_category()
                 elif int(choose) == 2:
                     self.remove_category()
-                elif float(choose) == 3:
+                elif int(choose) == 3:
                     print(self.categories)
-                elif float(choose) == 4:
+                elif int(choose) == 4:
                     print("Exit")
                     break
                 else:
                     print("Not correct value, try again")
             else:
                 print("Not correct value, try again")
-                continue
-
-
 
 class ExpenseManager:
 
     def expense(self):
         #function to return details of expense
         while True:
-            name = raw_input("Enter name of category")
-            if name not in self.categories:
-                print("Category doesn't exists")
-                continue
+            name = raw_input("Enter a name of category")
+            if name not in category_object.check_file():
+                print("Category doesn't exist")
             else:
-                amount = float("Enter an amount")
-                day_expense = int(raw_input( "Enter a day"))
-                month_expense = int(raw_input( "Enter a month"))
-                year_expense = int(raw_input( "Enter a year"))
-                date_expense = datetime( year_expense,month_expense,day_expense, tzinfo=TZ()).isoformat(' ')
-                return name, amount,date_expense
+                amount = float("Enter an amount of expense")
+                day = int(raw_input( "Enter a day"))
+                month = int(raw_input( "Enter a month"))
+                year = int(raw_input( "Enter a year"))
+                return day,month,year,name,amount
 
 category_object = CategoryManager()
-category_object.check_file()
+expense_object = ExpenseManager()
 
 class Menu:
 
+#todo function to check if category is exist
     def menu_content(self):
         while True:
             print("""
@@ -123,15 +108,14 @@ class Menu:
                 if int(choose) == 1:
                     category_object.menu()
                 elif int(choose) == 2:
-                    pass
-                elif float(choose) == 3:
+                    expense_object.expense()
+                elif int(choose) == 3:
                     print("Exit")
                     sys.exit()
                 else:
                     print("Not correct value, try again")
             else:
                 print("Not correct value, try again")
-                continue
 
 menu_object = Menu()
 menu_object.menu_content()
