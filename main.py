@@ -95,7 +95,6 @@ expense_object = ExpenseManager()
 
 class Menu:
 
-#todo function to check if category is exist
     def menu_content(self):
         while True:
             print("""
