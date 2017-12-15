@@ -41,17 +41,22 @@ class CategoryManager:
                 cat.write(category_name)
                 cat.close()
                 print("Category is added")
+                break
 
     def remove_category(self):
         while True:
             category_name = raw_input("Enter category to remove")
             if category_name in self.check_file():
-                for line in fileinput.input(self.file_name,inplace = True):
-                    line = line.rstrip()
-                    if category_name in line:
-                        line.replace(category_name," ")
-                    #print(line)
+                f = open( self.file_name, "r+" )
+                d = f.readlines()
+                f.seek( 0 )
+                for i in d:
+                    if i != category_name + '\n' and i != category_name:
+                        f.write( i )
+                f.truncate()
+                f.close()
                 print("Category is removed")
+                break
             else:
                 print("Category doesn't exist")
                 continue
