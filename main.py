@@ -1,23 +1,26 @@
+import re
 import sys
+import matplotlib.pyplot as plt
+
 class CategoryManager:
 
     def __init__(self):
         self.file_name = "CategoriesList.txt"
 
     def check_file(self):
-         #check if file exists
+        #check if file exists
         try:
             text = open(self.file_name, "r+")
-            print("Opened correctly.")
             r_categories = text.read()
-            categories = r_categories.split( "\n" )
+            categories = re.split(r'[,\s]*',r_categories)
             text.close()
             return categories
         except (IOError):
             print("File not found.")
 
     def categories(self):
-        pass
+        category = self.check_file()
+        return category
 
     def add_category(self):
         while True:
@@ -31,6 +34,7 @@ class CategoryManager:
                 cat.write(category_name)
                 cat.close()
                 print("Category is added")
+                break
 
     def remove_category(self):
         while True:
@@ -47,6 +51,7 @@ class CategoryManager:
                 f.truncate()
                 f.close()
                 print("Category is removed")
+                break
 
     def menu(self):
         text_menu = """ 
@@ -64,10 +69,11 @@ class CategoryManager:
                 elif int(choose) == 2:
                     self.remove_category()
                 elif int(choose) == 3:
-                    print(self.categories)
+                    for category in self.check_file():
+                        print(category)
                 elif int(choose) == 4:
-                    print("Exit")
-                    False
+                    print("Exit from editor")
+                    break
                 else:
                     print("Not correct value, try again")
             else:
@@ -79,17 +85,21 @@ class ExpenseManager:
         text_menu = """ 
                         Press 1 if you want to add expense
                         Press 2 if you want to remove expense
-                        Press 3 if you want to see expenses
-                        Press 4 if you want to exit expense manager
+                        Press 3 if you want to see expenses form date to date
+                        Press 4 if you want to show expenses by a category
+                        Press 5 if you want to exit expense manager
                         """
         while True:
             choose = raw_input( text_menu )
             if choose.isdigit():
                 if int( choose ) == 1:
                     self.check_file()
+                    self.add_expense()
                 elif int( choose ) == 2:
                     pass
                 elif int( choose ) == 3:
+                    pass
+                elif int( choose ) == 4:
                     pass
                 elif int( choose ) == 4:
                     print("Exit")
@@ -100,19 +110,21 @@ class ExpenseManager:
                 print("Not correct value, try again")
 
     def check_file(self):
-         #check if file exists
-        try:
-            text = open("2017year.txt", "r+")
-            content = text.read()
-            list_expenses = content.split( "\n" )
-            text.close()
-            return list_expenses
-        except (IOError):
-            print("File not found.")
+        pass
 
     def add_expense(self):
-        self.check_file()
-
+        year, month, day = self.date_expense()
+        name, amount = self.detail_expense()
+        file_name = str( year ) + 'txt'
+        try:
+            add_e = open( file_name, 'a' )
+            add_e.write( "\n" )
+            content_of_expense = year, month, day, name, amount
+            str_content = str(content_of_expense)
+            add_e.write(str_content)
+            add_e.close()
+        except (IOError):
+            print("File not found.")
 
     def remove_expense(self):
         self.check_file()
@@ -120,18 +132,30 @@ class ExpenseManager:
     def print_expenses(self):
         pass
 
-    def expense(self):
+    def date_expense(self):
+        #function to return date of expenses
+        year = int(raw_input( "Enter a year"))
+        month = int( raw_input( "Enter a month" ) )
+        day = int( raw_input( "Enter a day" ) )
+        file_name = str(year)+'txt'
+        try:
+            txt  = open(file_name, "r")
+            txt.close()
+        except (IOError):
+            open( file_name, "w" )
+            file_name.close()
+        return year,month,day
+
+    def detail_expense(self):
         #function to return details of expense
         while True:
             name = raw_input("Enter a name of category")
             if name not in category_object.check_file():
                 print("Category doesn't exist")
             else:
-                day = int(raw_input( "Enter a day"))
-                month = int(raw_input( "Enter a month"))
-                year = int(raw_input( "Enter a year"))
-                amount = float( "Enter an amount of expense" )
-                return day,month,year,name,amount
+                amount = raw_input( "Enter an amount of expense" )
+                return name, amount
+
 
 
 category_object = CategoryManager()
@@ -151,7 +175,7 @@ class Menu:
                 if int(choose) == 1:
                     category_object.menu()
                 elif int(choose) == 2:
-
+                    expense_object.menu()
                 elif int(choose) == 3:
                     print("Exit")
                     sys.exit()
@@ -159,6 +183,14 @@ class Menu:
                     print("Not correct value, try again")
             else:
                 print("Not correct value, try again")
+
+
+class FileManager():
+    pass
+
+
+
+file_object = FileManager()
 
 menu_object = Menu()
 menu_object.menu_content()

@@ -3,3 +3,8 @@ gas
 alcohol
 food
 rent
+clothes
+cosmetics
+shoes
+electronic
+
