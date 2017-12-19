@@ -1,5 +1,6 @@
 import re
 import sys
+import datetime
 import matplotlib.pyplot as plt
 
 class CategoryManager:
@@ -62,7 +63,7 @@ class CategoryManager:
                 """
         while True:
             choose = raw_input(text_menu)
-            if choose.isdigit():
+            try:
                 if int(choose) == 1:
                     self.check_file()
                     self.add_category()
@@ -76,7 +77,7 @@ class CategoryManager:
                     break
                 else:
                     print("Not correct value, try again")
-            else:
+            except(TypeError):
                 print("Not correct value, try again")
 
 class ExpenseManager:
@@ -85,28 +86,28 @@ class ExpenseManager:
         text_menu = """ 
                         Press 1 if you want to add expense
                         Press 2 if you want to remove expense
-                        Press 3 if you want to see expenses form date to date
+                        Press 3 if you want to see expenses from date to date
                         Press 4 if you want to show expenses by a category
                         Press 5 if you want to exit expense manager
                         """
         while True:
             choose = raw_input( text_menu )
-            if choose.isdigit():
-                if int( choose ) == 1:
-                    self.check_file()
+            try:
+                self.check_file()
+                if int(choose) == 1:
                     self.add_expense()
-                elif int( choose ) == 2:
+                elif int(choose) == 2:
+                    self.remove_expense_date()
+                elif int(choose) == 3:
+                    self.print_expenses()
+                elif int(choose) == 4:
                     pass
-                elif int( choose ) == 3:
-                    pass
-                elif int( choose ) == 4:
-                    pass
-                elif int( choose ) == 4:
+                elif int(choose) == 5:
                     print("Exit")
                     False
                 else:
                     print("Not correct value, try again")
-            else:
+            except(TypeError,ValueError):
                 print("Not correct value, try again")
 
     def check_file(self):
@@ -115,7 +116,7 @@ class ExpenseManager:
     def add_expense(self):
         year, month, day = self.date_expense()
         name, amount = self.detail_expense()
-        file_name = str( year ) + 'txt'
+        file_name = str(year) + '.txt'
         try:
             add_e = open( file_name, 'a' )
             add_e.write( "\n" )
@@ -123,27 +124,65 @@ class ExpenseManager:
             str_content = str(content_of_expense)
             add_e.write(str_content)
             add_e.close()
-        except (IOError):
+        except (IOError, TypeError,ValueError):
             print("File not found.")
 
-    def remove_expense(self):
-        self.check_file()
+    def remove_expense_date(self):
+        while True:
+            year, month, day = self.date_expense()
+            name, amount = self.detail_expense()
+            content_of_expense = year, month, day, name, amount
+            str_content = str( content_of_expense )
+            try:
+                file_name = str( year ) + '.txt'
+                f = open(file_name , "r+" )
+                d = f.readlines()
+                f.seek( 0 )
+                for i in d:
+                    if i != str_content + '\n' and i != str_content:
+                        f.write( i )
+                f.truncate()
+                f.close()
+                break
+            except (IOError):
+                print("File not found.")
+
 
     def print_expenses(self):
-        pass
-
-    def date_expense(self):
-        #function to return date of expenses
-        year = int(raw_input( "Enter a year"))
-        month = int( raw_input( "Enter a month" ) )
-        day = int( raw_input( "Enter a day" ) )
-        file_name = str(year)+'txt'
+        year, month, day = self.date_expense()
+        content_of_expense = year, month, day
+        file_name = str( year ) + '.txt'
         try:
-            txt  = open(file_name, "r")
+            txt = open( file_name, "r" )
+            for line in txt:
+                if content_of_expense in line:
+                    print(line)
             txt.close()
         except (IOError):
-            open( file_name, "w" )
-            file_name.close()
+            txt = open( file_name, "w" )
+            txt.close()
+
+
+
+
+    def date_expense(self):
+        while True:
+            #function to return date of expenses
+            year = int(raw_input( "Enter a year"))
+            month = int( raw_input( "Enter a month" ) )
+            day = int( raw_input( "Enter a day" ) )
+            try:
+                datetime.datetime( year=year, month=month, day=day)
+                file_name = str( year ) + '.txt'
+                try:
+                    txt = open( file_name, "r" )
+                    txt.close()
+                    break
+                except (IOError):
+                    txt = open( file_name, "w" )
+                    txt.close()
+            except(ValueError):
+                print("Not correct value")
         return year,month,day
 
     def detail_expense(self):
@@ -155,7 +194,6 @@ class ExpenseManager:
             else:
                 amount = raw_input( "Enter an amount of expense" )
                 return name, amount
-
 
 
 category_object = CategoryManager()
@@ -171,7 +209,7 @@ class Menu:
                     3.Press 3 Exit from Manager
                     """)
             choose = raw_input("Enter a number")
-            if choose.isdigit():
+            try:
                 if int(choose) == 1:
                     category_object.menu()
                 elif int(choose) == 2:
@@ -181,7 +219,7 @@ class Menu:
                     sys.exit()
                 else:
                     print("Not correct value, try again")
-            else:
+            except(ValueError,TypeError):
                 print("Not correct value, try again")
 
 
