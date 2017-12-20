@@ -99,12 +99,13 @@ class ExpenseManager:
                 elif int(choose) == 2:
                     self.remove_expense_date()
                 elif int(choose) == 3:
-                    self.print_expenses()
+                    dupa = self.print_expenses()
+                    print(dupa)
                 elif int(choose) == 4:
                     pass
                 elif int(choose) == 5:
                     print("Exit")
-                    False
+                    break
                 else:
                     print("Not correct value, try again")
             except(TypeError,ValueError):
@@ -135,35 +136,18 @@ class ExpenseManager:
             str_content = str( content_of_expense )
             try:
                 file_name = str( year ) + '.txt'
-                f = open(file_name , "r+" )
+                f = open(file_name , "r" )
                 d = f.readlines()
-                f.seek( 0 )
                 for i in d:
                     if i != str_content + '\n' and i != str_content:
                         f.write( i )
-                f.truncate()
                 f.close()
                 break
             except (IOError):
                 print("File not found.")
 
-
-    def print_expenses(self):
-        year, month, day = self.date_expense()
-        content_of_expense = year, month, day
-        file_name = str( year ) + '.txt'
-        try:
-            txt = open( file_name, "r" )
-            for line in txt:
-                if content_of_expense in line:
-                    print(line)
-            txt.close()
-        except (IOError):
-            txt = open( file_name, "w" )
-            txt.close()
-
-
-
+    def print_expenses_by_category(self):
+        pass
 
     def date_expense(self):
         while True:
@@ -171,17 +155,20 @@ class ExpenseManager:
             year = int(raw_input( "Enter a year"))
             month = int( raw_input( "Enter a month" ) )
             day = int( raw_input( "Enter a day" ) )
-            try:
-                datetime.datetime( year=year, month=month, day=day)
-                file_name = str( year ) + '.txt'
+            if year >= 2016 and year <= 2050:
                 try:
-                    txt = open( file_name, "r" )
-                    txt.close()
-                    break
-                except (IOError):
-                    txt = open( file_name, "w" )
-                    txt.close()
-            except(ValueError):
+                    datetime.datetime( year=year, month=month, day=day)
+                    file_name = str( year ) + '.txt'
+                    try:
+                        txt = open( file_name, "r" )
+                        txt.close()
+                        break
+                    except (IOError):
+                        txt = open( file_name, "w" )
+                        txt.close()
+                except(ValueError):
+                    print("Not correct value")
+            else:
                 print("Not correct value")
         return year,month,day
 
