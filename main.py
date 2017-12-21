@@ -2,6 +2,8 @@ import re
 import sys
 import datetime
 
+from decimal import Decimal
+
 global no_category
 global wrong_value
 wrong_value = "Not correct value, try again"
@@ -103,9 +105,11 @@ class ExpenseManager:
                 elif int(choose) == 2:
                     self.remove_expense_date()
                 elif int(choose) == 3:
-                    self.print_expenses_by_month()
+                    txt = self.print_expenses_by_month()
+                    print(txt)
                 elif int(choose) == 4:
-                    self.print_expenses_by_category()
+                    txt = self.print_expenses_by_category()
+                    print(txt)
                 elif int(choose) == 5:
                     print("Exit")
                     break
@@ -155,24 +159,33 @@ class ExpenseManager:
         month = raw_input( "Enter a month" )
         new_list = []
         for line in f:
-            list_line = line.split( "," )
+            r_line = line.replace( "(", " " )
+            rr_line = r_line.replace( ")", " " )
+            n_line = rr_line.replace( "\n", " " )
+            list_line = n_line.split( "," )
             for i in (list_line[1]):
-                print(list_line[1])
                 if month in list_line[1]:
                     new_list.append(line)
-        print('Find ', (len( new_list ) - 2) / 2, 'results')
-        print(new_list)
+        return new_list
 
     def print_expenses_by_category(self):
         # function to show expenses in year by category
         f = file_object.open_file()
         category = self.check_category()
         new_list = []
+        total = 0
         for line in f:
+            n_line = line.replace(")", " ")
+            list_line = n_line.split( "," )
             if category in line:
-                new_list.append( line )
-        print(new_list)
+                new_list.append( list_line )
+        i_amount = []
+        for i in new_list:
+            for value in range(0,len(new_list)/2):
+                am = i[4]
+                i_amount.append(am)
 
+            print(lst)
     def date_expense(self):
         while True:
             #function to return date of expenses
