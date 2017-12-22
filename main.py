@@ -6,7 +6,7 @@ from decimal import Decimal
 
 global no_category
 global wrong_value
-wrong_value = "Not correct value, try again"
+wrong_value = "Error occured. Not correct value."
 no_category = "Category doesn't exist"
 
 class CategoryManager:
@@ -163,9 +163,15 @@ class ExpenseManager:
             rr_line = r_line.replace( ")", " " )
             n_line = rr_line.replace( "\n", " " )
             list_line = n_line.split( "," )
-            for i in (list_line[1]):
-                if month in list_line[1]:
-                    new_list.append(line)
+            for i,n in enumerate(list_line):
+                #print("i=",i,"n = ",n, "dupa=", ' '+month)
+                if i == 1:
+                    a = ' '.join( map( str, n ))
+                    print("a",a)
+                    if n == ', '+month:
+                        print(n)
+
+        #return ( ' '.join( map( str, new_list )))
         return new_list
 
     def print_expenses_by_category(self):
@@ -178,14 +184,9 @@ class ExpenseManager:
             n_line = line.replace(")", " ")
             list_line = n_line.split( "," )
             if category in line:
-                new_list.append( list_line )
-        i_amount = []
-        for i in new_list:
-            for value in range(0,len(new_list)/2):
-                am = i[4]
-                i_amount.append(am)
+                new_list.append( line )
+        return ( ' '.join( map( str, new_list )))
 
-            print(lst)
     def date_expense(self):
         while True:
             #function to return date of expenses
@@ -212,7 +213,7 @@ class ExpenseManager:
     def detail_expense(self):
         #function to return details of expense
         name = self.check_category()
-        amount = raw_input( "Enter an amount of expense" )
+        amount = float(raw_input( "Enter an amount of expense" ))
         return name, amount
 
     def check_category(self):
