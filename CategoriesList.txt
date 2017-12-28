@@ -1,6 +1,5 @@
 water
 gas
-alcohol
 food
 rent
 clothes
@@ -9,3 +8,6 @@ shoes
 electronic
 
 
+
+
+gift

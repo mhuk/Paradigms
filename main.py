@@ -2,8 +2,6 @@ import re
 import sys
 import datetime
 
-from decimal import Decimal
-
 global no_category
 global wrong_value
 wrong_value = "Error occured. Not correct value."
@@ -15,7 +13,7 @@ class CategoryManager:
         self.file_name = "CategoriesList.txt"
 
     def check_file(self):
-        #check if file exists
+        """Return list of categories"""
         try:
             text = open(self.file_name, "r+")
             r_categories = text.read()
@@ -30,6 +28,7 @@ class CategoryManager:
         return category
 
     def add_category(self):
+        """Add category to CategoriesList"""
         while True:
             category_name = raw_input( "Enter a new category" )
             if category_name in self.check_file():
@@ -44,6 +43,7 @@ class CategoryManager:
                 break
 
     def remove_category(self):
+        """Remove category from CategoriesList"""
         while True:
             category_name = raw_input("Enter category to remove")
             if category_name not in self.check_file():
@@ -122,13 +122,14 @@ class ExpenseManager:
         pass
 
     def add_expense(self):
+        """Add new expense to file as a year"""
         year, month, day = self.date_expense()
         name, amount = self.detail_expense()
         file_name = str(year) + '.txt'
         try:
             add_e = open( file_name, 'a' )
             add_e.write( "\n" )
-            content_of_expense = year, month, day, name, amount
+            content_of_expense = year,month, day, name, amount
             str_content = str(content_of_expense)
             add_e.write(str_content)
             add_e.close()
@@ -136,6 +137,7 @@ class ExpenseManager:
             print("File not found.")
 
     def remove_expense_date(self):
+        """Remove an expense from file as a year"""
         while True:
             year, month, day = self.date_expense()
             name, amount = self.detail_expense()
@@ -154,28 +156,23 @@ class ExpenseManager:
                 print("File not found.")
 
     def print_expenses_by_month(self):
-        # function to show expenses in year by a month in selected year
+        """Show expenses in year by a month"""
         f = file_object.open_file()
         month = raw_input( "Enter a month" )
-        new_list = []
+        s_month = ' '+month
         for line in f:
             r_line = line.replace( "(", " " )
             rr_line = r_line.replace( ")", " " )
             n_line = rr_line.replace( "\n", " " )
             list_line = n_line.split( "," )
             for i,n in enumerate(list_line):
-                #print("i=",i,"n = ",n, "dupa=", ' '+month)
                 if i == 1:
-                    a = ' '.join( map( str, n ))
-                    print("a",a)
-                    if n == ', '+month:
-                        print(n)
-
-        #return ( ' '.join( map( str, new_list )))
-        return new_list
+                    a = ''.join( map( str, n ))
+                    if a == s_month:
+                       return line
 
     def print_expenses_by_category(self):
-        # function to show expenses in year by category
+        """Show expenses in year by a category"""
         f = file_object.open_file()
         category = self.check_category()
         new_list = []
@@ -188,6 +185,7 @@ class ExpenseManager:
         return ( ' '.join( map( str, new_list )))
 
     def date_expense(self):
+        """Return year, month, day"""
         while True:
             #function to return date of expenses
             year = int(raw_input( "Enter a year"))
@@ -211,21 +209,18 @@ class ExpenseManager:
         return year,month,day
 
     def detail_expense(self):
-        #function to return details of expense
+        """Retuen name and amount of expense """
         name = self.check_category()
         amount = float(raw_input( "Enter an amount of expense" ))
         return name, amount
 
     def check_category(self):
+        """Return name of category"""
         name = raw_input("Enter a name of category")
         if name not in category_object.check_file():
             print(no_category)
         else:
             return name
-
-
-category_object = CategoryManager()
-expense_object = ExpenseManager()
 
 class Menu:
 
@@ -250,11 +245,10 @@ class Menu:
             except(ValueError,TypeError):
                 print(wrong_value)
 
-
 class FileManager():
 
-
     def open_file(self):
+        """Return content of file"""
         year = int( raw_input( "Enter a year" ) )
         try:
             file_name = str( year ) + '.txt'
@@ -264,9 +258,9 @@ class FileManager():
             print("File not found.")
 
 
+category_object = CategoryManager()
+expense_object = ExpenseManager()
 file_object = FileManager()
-
-
 menu_object = Menu()
 menu_object.menu_content()
 
