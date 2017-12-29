@@ -1,12 +1,12 @@
 import re
 import os
-import sys
 import datetime
 
 global no_category
 global wrong_value
 wrong_value = "Error occur. Not correct value."
 no_category = "Category doesn't exist"
+no_file = "File not found."
 
 class CategoryManager:
 
@@ -15,14 +15,14 @@ class CategoryManager:
 
     def check_file(self):
         """Return list of categories"""
-        if os.path.isfile(self.file_name):
+        if os.path.isfile(self.file_name) :
             text = open(self.file_name, "r+")
             r_categories = text.read()
             categories = re.split(r'[,\s]*', r_categories)
             text.close()
             return categories
         else:
-            print("File not found.")
+            print(no_file)
 
     def categories(self):
         category = self.check_file()
@@ -31,11 +31,12 @@ class CategoryManager:
     def add_category(self):
         """Add category to CategoriesList"""
         while True:
-            category_name = raw_input( "Enter a new category" )
+            category_name = raw_input("Enter a new category")
             if category_name in self.check_file():
                 print("Category already exist")
+                break
             else:
-                cat = open(self.file_name,'a')
+                cat = open(self.file_name, 'a')
                 cat.write("\n")
                 cat.write(category_name)
                 cat.close()
@@ -44,21 +45,26 @@ class CategoryManager:
 
     def remove_category(self):
         """Remove category from CategoriesList"""
-        while True:
-            category_name = raw_input("Enter category to remove")
-            if category_name not in self.check_file():
-                print(no_category)
-            else:
-                f = open(self.file_name, "r+")
-                d = f.readlines()
-                f.seek(0)
-                for i in d:
-                    if i != category_name + '\n' and i != category_name:
-                        f.write(i)
-                f.truncate()
-                f.close()
-                print("Category is removed")
-                break
+        statinfo = os.stat(self.file_name)
+        if statinfo.st_size > 2:
+            while True:
+                category_name = raw_input("Enter category to remove")
+                if category_name not in self.check_file():
+                    print(no_category)
+                    break
+                else:
+                    f = open(self.file_name, "r+")
+                    d = f.readlines()
+                    f.seek(0)
+                    for i in d:
+                        if i != category_name + '\n' and i != category_name:
+                            f.write(i)
+                    f.truncate()
+                    f.close()
+                    print("Category is removed")
+                    break
+        else:
+            print("File is empty")
 
     def menu(self):
         text_menu = """ 
@@ -128,7 +134,7 @@ class ExpenseManager:
             add_e.write(str_content)
             add_e.close()
         except (IOError, TypeError,ValueError):
-            print("File not found.")
+            print(no_file)
 
     def remove_expense_date(self):
         """Remove an expense from file as a year"""
@@ -228,7 +234,7 @@ class Menu:
                     expense_object.menu()
                 elif int(choose) == 3:
                     print("Exit")
-                    sys.exit()
+                    break
                 else:
                     print(wrong_value)
             except(ValueError, TypeError):
@@ -244,7 +250,9 @@ class FileManager():
             f = open(file_name, "r+")
             return f
         else:
-            print("File not found.")
+            print(no_file)
+
+
 
 
 category_object = CategoryManager()
