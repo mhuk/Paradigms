@@ -2,12 +2,10 @@ water
 gas
 food
 rent
-clothes
 cosmetics
 shoes
 electronic
-
-
-
-
+education
+clothes
+alcohol
 gift

@@ -1,10 +1,11 @@
 import re
+import os
 import sys
 import datetime
 
 global no_category
 global wrong_value
-wrong_value = "Error occured. Not correct value."
+wrong_value = "Error occur. Not correct value."
 no_category = "Category doesn't exist"
 
 class CategoryManager:
@@ -14,13 +15,13 @@ class CategoryManager:
 
     def check_file(self):
         """Return list of categories"""
-        try:
+        if os.path.isfile(self.file_name):
             text = open(self.file_name, "r+")
             r_categories = text.read()
-            categories = re.split(r'[,\s]*',r_categories)
+            categories = re.split(r'[,\s]*', r_categories)
             text.close()
             return categories
-        except (IOError):
+        else:
             print("File not found.")
 
     def categories(self):
@@ -34,7 +35,6 @@ class CategoryManager:
             if category_name in self.check_file():
                 print("Category already exist")
             else:
-                #append file if category is added
                 cat = open(self.file_name,'a')
                 cat.write("\n")
                 cat.write(category_name)
@@ -49,12 +49,12 @@ class CategoryManager:
             if category_name not in self.check_file():
                 print(no_category)
             else:
-                f = open( self.file_name, "r+" )
+                f = open(self.file_name, "r+")
                 d = f.readlines()
-                f.seek( 0 )
+                f.seek(0)
                 for i in d:
                     if i != category_name + '\n' and i != category_name:
-                        f.write( i )
+                        f.write(i)
                 f.truncate()
                 f.close()
                 print("Category is removed")
@@ -69,22 +69,20 @@ class CategoryManager:
                 """
         while True:
             choose = raw_input(text_menu)
-            try:
-                if int(choose) == 1:
-                    self.check_file()
-                    self.add_category()
-                elif int(choose) == 2:
-                    self.remove_category()
-                elif int(choose) == 3:
-                    for category in self.check_file():
-                        print(category)
-                elif int(choose) == 4:
-                    print("Exit from editor")
-                    break
-                else:
-                    print(wrong_value)
-            except(TypeError):
+            if int(choose) == 1:
+                self.check_file()
+                self.add_category()
+            elif int(choose) == 2:
+                self.remove_category()
+            elif int(choose) == 3:
+                for category in self.check_file():
+                    print(category)
+            elif int(choose) == 4:
+                print("Exit from editor")
+                break
+            else:
                 print(wrong_value)
+
 
 class ExpenseManager:
 
@@ -99,7 +97,6 @@ class ExpenseManager:
         while True:
             choose = raw_input( text_menu )
             try:
-                self.check_file()
                 if int(choose) == 1:
                     self.add_expense()
                 elif int(choose) == 2:
@@ -118,17 +115,14 @@ class ExpenseManager:
             except(TypeError,ValueError):
                 print(wrong_value)
 
-    def check_file(self):
-        pass
-
     def add_expense(self):
         """Add new expense to file as a year"""
         year, month, day = self.date_expense()
         name, amount = self.detail_expense()
         file_name = str(year) + '.txt'
         try:
-            add_e = open( file_name, 'a' )
-            add_e.write( "\n" )
+            add_e = open(file_name, 'a')
+            add_e.write("\n")
             content_of_expense = year,month, day, name, amount
             str_content = str(content_of_expense)
             add_e.write(str_content)
@@ -142,76 +136,71 @@ class ExpenseManager:
             year, month, day = self.date_expense()
             name, amount = self.detail_expense()
             content_of_expense = year, month, day, name, amount
-            str_content = str( content_of_expense )
-            try:
-                file_name = str( year ) + '.txt'
-                f = open(file_name , "r" )
-                d = f.readlines()
-                for i in d:
+            str_content = str(content_of_expense)
+            file_name = str(year) + '.txt'
+            if os.path.isfile(file_name):
+                f = open(file_name, "r")
+                lines = f.readlines()
+                f.close()
+                f = open(file_name, "w")
+                for i in lines:
                     if i != str_content + '\n' and i != str_content:
-                        f.write( i )
+                        f.write(i)
                 f.close()
                 break
-            except (IOError):
+            else:
                 print("File not found.")
 
     def print_expenses_by_month(self):
         """Show expenses in year by a month"""
         f = file_object.open_file()
-        month = raw_input( "Enter a month" )
+        month = raw_input("Enter a month")
         s_month = ' '+month
+        find = ""
         for line in f:
-            r_line = line.replace( "(", " " )
-            rr_line = r_line.replace( ")", " " )
-            n_line = rr_line.replace( "\n", " " )
-            list_line = n_line.split( "," )
-            for i,n in enumerate(list_line):
+            r_line = line.replace("(", " ")
+            rr_line = r_line.replace(")", " ")
+            n_line = rr_line.replace("\n", " ")
+            list_line = n_line.split(",")
+            for i, n in enumerate(list_line):
                 if i == 1:
-                    a = ''.join( map( str, n ))
+                    a = (''.join(map(str, n)))
                     if a == s_month:
-                       return line
+                        find += line
+        return find
 
     def print_expenses_by_category(self):
         """Show expenses in year by a category"""
         f = file_object.open_file()
         category = self.check_category()
         new_list = []
-        total = 0
         for line in f:
-            n_line = line.replace(")", " ")
-            list_line = n_line.split( "," )
             if category in line:
-                new_list.append( line )
-        return ( ' '.join( map( str, new_list )))
+                new_list.append(line)
+        return ' '.join(map(str, new_list))
 
     def date_expense(self):
         """Return year, month, day"""
         while True:
-            #function to return date of expenses
-            year = int(raw_input( "Enter a year"))
-            month = int( raw_input( "Enter a month" ) )
-            day = int( raw_input( "Enter a day" ) )
+            year = int(raw_input("Enter a year"))
+            month = int( raw_input("Enter a month"))
+            day = int( raw_input("Enter a day"))
             if year >= 2016 and year <= 2050:
-                try:
-                    datetime.datetime( year=year, month=month, day=day)
-                    file_name = str( year ) + '.txt'
-                    try:
-                        txt = open( file_name, "r" )
-                        txt.close()
-                        break
-                    except (IOError):
-                        txt = open( file_name, "w" )
-                        txt.close()
-                except(ValueError):
-                    print(wrong_value)
+                datetime.datetime(year=year, month=month, day=day)
+                file_name = str(year) + '.txt'
+                if os.path.isfile(file_name):
+                    break
+                else:
+                    txt = open(file_name, "w")
+                    txt.close()
             else:
                 print(wrong_value)
-        return year,month,day
+        return year, month, day
 
     def detail_expense(self):
-        """Retuen name and amount of expense """
+        """Return name and amount of expense """
         name = self.check_category()
-        amount = float(raw_input( "Enter an amount of expense" ))
+        amount = float(raw_input("Enter an amount of expense"))
         return name, amount
 
     def check_category(self):
@@ -242,19 +231,19 @@ class Menu:
                     sys.exit()
                 else:
                     print(wrong_value)
-            except(ValueError,TypeError):
+            except(ValueError, TypeError):
                 print(wrong_value)
 
 class FileManager():
 
     def open_file(self):
         """Return content of file"""
-        year = int( raw_input( "Enter a year" ) )
-        try:
-            file_name = str( year ) + '.txt'
-            f = open( file_name, "r+" )
+        year = int(raw_input("Enter a year"))
+        file_name = str(year) + '.txt'
+        if os.path.isfile(file_name):
+            f = open(file_name, "r+")
             return f
-        except (IOError):
+        else:
             print("File not found.")
 
 
