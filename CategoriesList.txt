@@ -1,9 +1,9 @@
-
 rent
 water
 gas
 cosmetics
 education
-
-medical
-
+tv
+rent
+water
+gas
