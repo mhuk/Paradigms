@@ -1,6 +1,9 @@
 import re
 import os
+import numpy as np
 import datetime
+import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt; plt.rcdefaults()
 
 global no_category
 global wrong_value
@@ -100,6 +103,7 @@ class ExpenseManager:
         self.exit = 5
         self.min_year = 2016
         self.max_year = 2050
+        self.graphic = 6
 
     def menu(self):
         text_menu = """ 
@@ -108,6 +112,7 @@ class ExpenseManager:
                         Press 3 if you want to see expenses by a month
                         Press 4 if you want to show expenses by a category
                         Press 5 if you want to exit expense manager
+                        Press 6 if you want to see graphics by month
                         """
         while True:
             choose = int(raw_input(text_menu))
@@ -124,6 +129,9 @@ class ExpenseManager:
             elif choose == self.exit:
                 print("Exit")
                 break
+            elif choose == self.graphic:
+                diagram_object.list_exp()
+                diagram_object.gen_diagram()
             else:
                 print(wrong_value)
 
@@ -211,8 +219,8 @@ class ExpenseManager:
         while True:
             year = int(raw_input("Enter a year"))
             if year >= self.min_year and year <= self.max_year:
-                month = int( raw_input( "Enter a month" ) )
-                day = int( raw_input( "Enter a day" ) )
+                month = int( raw_input("Enter a month"))
+                day = int( raw_input("Enter a day"))
                 datetime.datetime(year=year, month=month, day=day)
                 return year, month, day
             else:
@@ -272,7 +280,64 @@ class FileManager():
         else:
             print(no_file)
 
+class DiagramsManager():
 
+    def __init__(self):
+        self.dict_summary = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [],
+                            9: [], 10: [], 11: [], 12: []}
+        self.dict_month = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [],
+                           9: [], 10: [], 11: [], 12: []}
+
+        self.c_dict_sum = self.dict_summary.copy()
+        self.c_dict_month = self.dict_month.copy()
+
+    def list_exp(self):
+        """Return expenses by month"""
+        while True:
+            f = file_object.open_file()
+            if f is None:
+                print(wrong_value)
+            else:
+                break
+        for key in self.c_dict_sum:
+            str_month = str(key)
+            s_month = ' ' + str_month
+            for line in f:
+                r_line = line.replace("(", " ")
+                rr_line = r_line.replace(")", " ")
+                n_line = rr_line.replace("\n", " ")
+                list_line = n_line.split(",")
+                for i, n in enumerate(list_line):
+                    if i == 1:
+                        a = (''.join(map(str, n)))
+                        if a == s_month:
+                            self.c_dict_month.setdefault(key, []).append(float(list_line[4]))
+            f.seek(0)
+        return self.c_dict_month
+
+    def summary_month(self):
+        """Return summary of expenses for months"""
+        for key in self.c_dict_month:
+            result = sum(self.c_dict_month[key])
+            self.c_dict_sum[key] = result
+        return self.c_dict_month.setdefault(key, []).append(float(result))
+
+    def gen_diagram(self):
+        """"Show diagram with expenses by month"""
+        self.summary_month()
+        list_values = []
+        for values in self.c_dict_sum.itervalues():
+            list_values.append(values)
+        objects = ('Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.')
+        y_pos = np.arange(len(objects))
+        plt.bar(y_pos, list_values, align='center', alpha=0.5)
+        plt.xticks(y_pos, objects)
+        plt.xlabel('Months')
+        plt.ylabel('Expenses')
+        plt.grid(True)
+        return plt.show()
+
+diagram_object = DiagramsManager()
 category_object = CategoryManager()
 expense_object = ExpenseManager()
 file_object = FileManager()
